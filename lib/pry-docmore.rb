@@ -3,7 +3,7 @@ class Pry
     def self.split_docs doc_string
       Hash[doc_string.split(/\n/).map { |e| e.split(/\s+/,2) }]
     end
-    @@DOCS = [
+    @DOCS = [
       {
         label: 'Keyword',
         source: 'ruby source, lex.c, circa line 219',
@@ -113,7 +113,7 @@ $-w        True if option -w is set.})
       },
     ]
     def self.explain thing
-      @@DOCS.each do |kind|
+      @DOCS.each do |kind|
         return kind[:explanations][thing] if kind[:explanations].has_key? thing
       end
       nil
