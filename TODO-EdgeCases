@@ -1,0 +1,27 @@
+# Ruby edge cases
+
+# lambdas can no longer be used with instance_eval in Ruby 1.9.2
+l = lambda { puts "hello world"! }
+Object.instance_eval(&l) #=> invalid argument. This is due to the fact instance_eval now yields a value (the receiver) in 1.9
+
+# module double inclusion
+# module appear multiple times in inheritance chain
+# behaviour of constants in class_eval
+# Proc.new can create a proc from an implicit block
+# behaviour of *[] in 1.8 vs 1.9
+# class variables in singleton classes -- end up at toplevel
+# behaviour of nested def (puts method on class even though receiver is object) vs def self.meth
+* C ||= 5 (if C is undefined) raises a NameError in 1.8 but works fine in 1.9
+* String.send(:attr_accessor, :x)  creates PRIVATE accessor methods, rather than public. Does not behave this way in rubinius -- but does in jruby and MRI/YARV.
+* symbol.to_proc.call(obj) will invoke private methods in 1.8, but only public methods in 1.9. This is likely intentional as 1.9 uses rb_funcall3() (public methods only) see sym_call() in string.c
+
+class Hello; def alpha; def beta; end; end; end
+Hello.new.alphaputs beta method on Hello instead of on Hello instance
+# that's kind of interesting as the context at the point of the 'def' is the instance, not the class
+# so it's another example of default definee vs current context
+
+Module.new::Object #=> fail, but
+Class.new::Object #=> Object
+00:39 <rking> I thought one of the rules of Modules was that they couldn't be instantiated?
+00:39 <banisete_> im not instantiating a module
+00:39 <banisete_> im instantiating the Module class, which generates modules ;)
