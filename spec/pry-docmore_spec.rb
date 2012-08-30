@@ -12,16 +12,12 @@ keywords = [
   },
   {
     source: 'http://krijnhoetmer.nl/stuff/ruby/keywords/',
-    # Fixed `defined` to be `defined?`
     words: %w(alias and BEGIN begin break case class def defined? do else elsif END end ensure false for if in module next nil not or redo rescue retry return self super then true undef unless until when while yield)
   },
   {
     source: 'ruby source, lex.c, circa line 219',
     words: %w(alias and begin BEGIN break case class def defined?  do else elsif __ENCODING__ end END ensure false __FILE__ for if in __LINE__ module next nil not or redo rescue retry return self super then true undef unless until when while yield)
   },
-  
-  # Also: ruby source, parse.c, circa line 1486 teaches us that there are
-  #   separate entities for do, do_block, do_cond, do_LAMBDA.
 ]
 
 globals = [
@@ -33,6 +29,10 @@ globals = [
     source: 'ruby -e "p global_variables.map(&:to_s)"',
     vars: ["$;", "$-F", "$@", "$!", "$SAFE", "$~", "$&", "$`", "$'", "$+", "$=", "$KCODE", "$-K", "$,", "$/", "$-0", "$\\", "$_", "$stdin", "$stdout", "$stderr", "$>", "$<", "$.", "$FILENAME", "$-i", "$*", "$?", "$$", "$:", "$-I", "$LOAD_PATH", "$\"", "$LOADED_FEATURES", "$VERBOSE", "$-v", "$-w", "$-W", "$DEBUG", "$-d", "$0", "$PROGRAM_NAME", "$-p", "$-l", "$-a", "$1", "$2", "$3", "$4", "$5", "$6", "$7", "$8", "$9"]
   },
+#  {
+#    source: 'pry: ls -g',
+#    vars: `echo 'lg -g' | pry`.split /\s+/
+#  }
 ]
 
 def it_explains_each args
@@ -41,7 +41,8 @@ def it_explains_each args
     args[:cases].each do |e|
       e[args[:specifically]].each do |v|
         self.example.metadata[:description_args] = v + description
-        Pry::Docmore.explain(v).should_not be_nil
+        multiline_content = %r/\n.+\n.+/
+        Pry::Docmore.explain(v).should match multiline_content
       end
     end
   end
